@@ -168,8 +168,8 @@ def show_line_chart(result, label):
     else:
         print('Wrong Data!')
 id = 200
-pd_id = poly_pd[:, id].rashaped(-1, len(id))
-lb_id = poly_lb[:, id].rashaped(-1, len(id))
+pd_id = poly_pd[:, id].rashaped(-1, 1)
+lb_id = poly_lb[:, id].rashaped(-1, 1)
 show_line_chart(pd_id,lb_id)
 
 # 模型性能评价
