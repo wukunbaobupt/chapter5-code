@@ -22,10 +22,10 @@ print(tensorflow.__version__)
 # 定义数据的位置
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
-total_data_path = '../Data/total.vocab'
-data_11 =  './data/2013-11-fusion.vocab'
-data_12 = './data/2013-12-fusion.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
+total_data_path = './Data/total.vocab'
+data_11 =  './Data/2013-11-fusion.vocab'
+data_12 = './Data/2013-12-fusion.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
 with open(data_11,"r") as f:  #设置文件对象
     print(f.readline().strip())
 
@@ -88,7 +88,7 @@ p_test = test_data[:, :, :, 3:6]
 t_test = test_data[:, :, :, 6:7]
 test_label = test_data[:, :, :, -1]
 test_label = np.reshape(test_label, [test_data.shape[0], 400])
-DataPreProcess.SaveLabelData(test_label, '../Data/labels.vocab')
+DataPreProcess.SaveLabelData(test_label, './Data/labels.vocab')
 STEPS_PER_EPOCH = int(train_data.shape[0] // BATCH_SIZE)
 
 #自定义回调函数(用于计算验证损失)
@@ -117,12 +117,12 @@ MiniSTResNet.summary()
 # 训练和保存模型
 print('-> Start to train MiniSTResNet model!')
 MiniSTResNet_history = MiniSTResNet.fit_generator(generator=TrainModel.Generator([c_train, p_train, t_train], train_label,  STEPS_PER_EPOCH, BATCH_SIZE),steps_per_epoch=STEPS_PER_EPOCH, epochs=EPOCHS, validation_data=([c_valid, p_valid, t_valid],valid_label), callbacks=[validation_loss_history], verbose=1, shuffle=True)
-MiniSTResNet_path = '../Model/MiniSTResNet.h5'
+MiniSTResNet_path = './Model/MiniSTResNet.h5'
 MiniSTResNet.save_weights(MiniSTResNet_path)
 print('-> Finish to save MiniSTResNet model')
 
 # 保存预测数据
-MiniSTResNet_result_path = '../Data/MiniSTResNet_result.vocab'
+MiniSTResNet_result_path = './Data/MiniSTResNet_result.vocab'
 MiniSTResNet_predict = MiniSTResNet.predict([c_test, p_test, t_test], batch_size=BATCH_SIZE ,verbose=1)
 TrainModel.WriteData(MiniSTResNet_result_path, MiniSTResNet_predict)
 
@@ -138,12 +138,12 @@ plt.ylabel('Loss', fontsize=15)
 plt.xlabel('Epoch', fontsize=15)
 plt.legend()
 plt.tight_layout()
-plt.savefig('../result/5-5-9.svg', format='svg')
+plt.savefig('./results/5-5-9.svg', format='svg')
 plt.show()
 
-MiniSTResNet_result_path = '../Data/MiniSTResNet_result.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
-label_path = '../Data/labels.vocab'
+MiniSTResNet_result_path = './Data/MiniSTResNet_result.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
+label_path = './Data/labels.vocab'
 
 MiniSTResNet_result = Visualization.DecodeData(MiniSTResNet_result_path, max_min_path)
 label = Visualization.DecodeData(label_path, max_min_path)
@@ -170,7 +170,7 @@ plt.title("MiniSTResNet 预测值、实际值和误差分布图 ID=%d "%(loc_id)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/MiniSTResNet.svg', format='svg')
+plt.savefig('./results/MiniSTResNet.svg', format='svg')
 plt.show()
 
 #计算性能

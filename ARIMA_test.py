@@ -10,6 +10,7 @@ import warnings
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 # import statsmodels.api as sm
 from sklearn import metrics
 from tqdm import tqdm
@@ -66,10 +67,10 @@ warnings.filterwarnings("ignore")
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
 
-total_data_path = '../Data/total.vocab'
+total_data_path = './Data/total.vocab'
 data_11 =  './data/2013-11-fusion.vocab'
 data_12 = './data/2013-12-fusion.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
 
 with open(data_11,"r") as f:  #设置文件对象
     print(f.readline().strip())
@@ -99,12 +100,6 @@ train.head()
 # 1 差分处理，确定d
 
 # 2 画ACF和PACF图，确定p,q
-
-import pandas as pd
-import matplotlib.pyplot as plt
-
-
-
 # 确定时间序列的差分
 fig = plt.figure(figsize=(20,16))
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
@@ -141,7 +136,7 @@ ax2.tick_params(axis='y', labelsize=20)  # 设置 y 轴刻度标签的字体大�
 
 
 plt.subplots_adjust(hspace=0.5)
-plt.savefig('../result/5-4-2.svg', format='svg')
+plt.savefig('./results/5-4-2.svg', format='svg')
 plt.show()
 
 # 分别画出ACF(自相关)和PACF（偏自相关）图像
@@ -169,7 +164,7 @@ ax2.set_title('偏自相关', fontsize=20)
 ax2.tick_params(axis='x', labelsize=20)  # 设置 x 轴刻度标签的字体大小
 ax2.tick_params(axis='y', labelsize=20)  # 设置 y 轴刻度标签的字体大小
 fig.tight_layout()
-plt.savefig('../result/5-4-3.svg', format='svg')
+plt.savefig('./results/5-4-3.svg', format='svg')
 plt.show()
 
 # arima算法 从statsmodels库中调用ARIMA算法实例
@@ -224,7 +219,7 @@ plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
 plt.legend(fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/5-4-4.svg', format='svg')
+plt.savefig('./results/5-4-4.svg', format='svg')
 plt.show()
 
 

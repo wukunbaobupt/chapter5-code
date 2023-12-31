@@ -41,10 +41,10 @@ warnings.filterwarnings("ignore")
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
 
-total_data_path = '../Data/total.vocab'
+total_data_path = './Data/total.vocab'
 data_11 =  './data/2013-11-fusion.vocab'
 data_12 = './data/2013-12-fusion.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
 
 with open(data_11,"r") as f:  #设置文件对象
     print(f.readline().strip())
@@ -80,7 +80,7 @@ dt = list(range(len(series[0:720])))
 plt.xticks(range(1, len(dt), 7*24), date, rotation=0)
 plt.grid(True)
 plt.tight_layout()
-plt.savefig('../result/5-4-7.svg', format='svg')
+plt.savefig('./results/5-4-7.svg', format='svg')
 plt.show()
 
 # 尝试不同的取值进行对比
@@ -210,7 +210,7 @@ plt.xlabel("Epochs")
 plt.ylabel("Loss")
 plt.legend()
 plt.tight_layout()
-plt.savefig('../result/5-4-8.svg', format='svg')
+plt.savefig('./results/5-4-8.svg', format='svg')
 plt.show()
 
 # 观察模型预测运行的时间
@@ -243,7 +243,7 @@ plt.title('LSTM 预测值、实际值和误差分布图 ID=%d'%(id), fontsize=20
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/5-4-9.svg', format='svg')
+plt.savefig('./results/5-4-9.svg', format='svg')
 plt.show()
 
 RMSE =mean_squared_error(X_test, rnn_forecast)**0.5

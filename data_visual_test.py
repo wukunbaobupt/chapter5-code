@@ -57,7 +57,6 @@ plt.rcParams['axes.unicode_minus'] = False
 vmax= np.max(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
 vmin= np.min(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
 
-#查看某天某时的空间流量分布情况
 plt.subplot(121)
 ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_1], square=True, vmin=vmin, vmax=vmax)
 ax1.set_title("11月16日下午3点的真实流量" , fontsize=15)
@@ -65,7 +64,6 @@ plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴�
 plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
 plt.xlim()
 
-#查看某天平均的空间流量分布情况
 plt.subplot(122)
 ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_2], square=True, vmin=vmin, vmax=vmax)
 ax1.set_title("11月16日晚上9点的真实流量" , fontsize=15)
@@ -74,6 +72,7 @@ plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴�
 
 plt.tight_layout()
 plt.savefig('../result/5-2-5.svg', format='svg')
+plt.show()
 
 # 查看某地区某天24小时的练习时序流量变化
 

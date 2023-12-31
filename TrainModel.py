@@ -82,7 +82,7 @@ def MakeConvLSTMDataset(data_path):
     day_nums = len(total_data) // 400  # 数据的形式转换为（60，400，24）表示60天，400个城市，24小时
     total_data = np.reshape(np.array(total_data), [day_nums, 400, 24])
     print(total_data.shape)
-    train, test, valid = [], [], []
+    train, test = [], []
     for day in range(7, 44):
         for hour in range(total_data.shape[2]):
             input = []
@@ -107,17 +107,14 @@ def MakeConvLSTMDataset(data_path):
 
             data = np.c_[input, label]
 
-            if day <= 29:
+            if day <= 36:
                 train.append(data)
-            if 29 < day <=36:
-                valid.append(data)
             if day > 36:
                 test.append(data)
     train = np.array(train)  # [552, 20, 20, 8] 23*24 = 552
-    valid = np.array(valid)  # [168, 20, 20, 8] 7*24 = 168
     test = np.array(test)  # [168, 20, 20, 8] 7*24 = 168
 
-    return train, valid, test
+    return train, test
 
 
 def Generator(datas, train_label, steps_per_epoch, batch_size):

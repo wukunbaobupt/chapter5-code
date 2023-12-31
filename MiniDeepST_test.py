@@ -26,10 +26,10 @@ print(tensorflow.__version__)
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
 
-total_data_path = '../Data/total.vocab'
+total_data_path = './Data/total.vocab'
 data_11 =  './data/2013-11-fusion.vocab'
 data_12 = './data/2013-12-fusion.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
 
 with open(data_11,"r") as f:  #设置文件对象
     print(f.readline().strip())
@@ -88,7 +88,7 @@ p_test = test_data[:, :, :, 3:6]
 t_test = test_data[:, :, :, 6:7]
 test_label = test_data[:, :, :, -1]
 test_label = np.reshape(test_label, [test_data.shape[0], 400])
-DataPreProcess.SaveLabelData(test_label, '../Data/labels.vocab')
+DataPreProcess.SaveLabelData(test_label, './Data/labels.vocab')
 STEPS_PER_EPOCH = int(train_data.shape[0] // BATCH_SIZE)
 
 class ValidationLossHistory(Callback):
@@ -125,12 +125,12 @@ MiniDeepST.summary()
 print('-> Start to train MiniDeepST model!')
 
 MiniDeepST_history = MiniDeepST.fit_generator(generator=TrainModel.Generator([c_train, p_train, t_train], train_label,  STEPS_PER_EPOCH, BATCH_SIZE),steps_per_epoch=STEPS_PER_EPOCH, epochs=EPOCHS, validation_data=([c_valid, p_valid, t_valid], valid_label), callbacks=[validation_loss_history], verbose=1, shuffle=True)
-MiniDeepST_path = '../Model/MiniDeepST.h5'
+MiniDeepST_path = './Model/MiniDeepST.h5'
 MiniDeepST.save_weights(MiniDeepST_path)
 print('-> Finish to save trained MiniDeepST model')
 
 # 保存预测数据
-MiniDeepST_result_path = '../Data/MiniDeepST_result.vocab'
+MiniDeepST_result_path = './Data/MiniDeepST_result.vocab'
 MiniDeepST_predict = MiniDeepST.predict([c_test, p_test, t_test], batch_size=BATCH_SIZE ,verbose=1)
 print(MiniDeepST_predict.shape)
 TrainModel.WriteData(MiniDeepST_result_path, MiniDeepST_predict)
@@ -148,7 +148,7 @@ plt.ylabel('loss', fontsize=15)
 plt.xlabel('Epoch', fontsize=15)
 plt.legend()
 plt.tight_layout()
-plt.savefig('../result/5-5-4.svg', format='svg')
+plt.savefig('./results/5-5-4.svg', format='svg')
 plt.show()
 
 
@@ -157,9 +157,9 @@ plt.show()
 # 3.2.1 获取预测结果
 
 # 获取预测数据并归一化
-MiniDeepST_result_path = '../Data/MiniDeepST_result.vocab'
-max_min_path = '../Data/loc_max_mix.vocab'
-label_path = '../Data/labels.vocab'
+MiniDeepST_result_path = './Data/MiniDeepST_result.vocab'
+max_min_path = './Data/loc_max_mix.vocab'
+label_path = './Data/labels.vocab'
 
 MiniDeepST_result = Visualization.DecodeData(MiniDeepST_result_path, max_min_path)
 label = Visualization.DecodeData(label_path, max_min_path)
@@ -187,7 +187,7 @@ plt.title("MiniDeepST 预测值、实际值和误差分布图 ID=%d "%(loc_id), 
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/5-5-5.svg', format='svg')
+plt.savefig('./results/5-5-5.svg', format='svg')
 plt.show()
 
 #计算性能

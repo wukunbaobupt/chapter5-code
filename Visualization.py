@@ -111,6 +111,14 @@ def HotMap(hour, results_dict, label):
     plt.show()
     
 
+def CalculateMSE(data, label):
+    res = []
+    for i in range(label.shape[0]):
+        count = 0
+        for j in range(label.shape[1]):
+            count = count + pow(abs(data[i][j]-label[i][j]), 2)
+        res.append(count/400)
+    return np.mean(res)\
 
 def CalculateMAE(data, label):
     res = []
@@ -121,15 +129,6 @@ def CalculateMAE(data, label):
         res.append(count/400)
     return np.mean(res)
 
-
-def CalculateMSE(data, label):
-    res = []
-    for i in range(label.shape[0]):
-        count = 0
-        for j in range(label.shape[1]):
-            count = count + pow(abs(data[i][j]-label[i][j]), 2)
-        res.append(count/400)
-    return np.mean(res)
 
 def CalculateRMSE(data, label):
     res = []
