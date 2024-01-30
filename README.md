@@ -27,7 +27,7 @@
 
 **SimHei.ttf**：字体文件，用于画图时显示中文字体
 
-**TrainModel.py**：自定义模拟训练时的函数库
+**TrainModel.py**：自定义模型训练时的函数库
 
 **Visualization**：自定义用于可视化的函数库
 
