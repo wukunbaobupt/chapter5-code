@@ -77,5 +77,5 @@ python 4_CNN.py
 ### 5、使用ConvLSTM模型进行流量预测
 在项目根目录下执行下列指令\
 ```
-python 5_ConvLSTM
+python 5_ConvLSTM.py
 ```
