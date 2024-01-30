@@ -25,7 +25,7 @@
 
 **requirements.txt**：给出了运行该项目代码所需要的安装的python库\
 
-**SimHei.ttf*：字体文件，用于画图时显示中文字体\
+**SimHei.ttf**：字体文件，用于画图时显示中文字体\
 
 **TrainModel.py**：自定义模拟训练时的函数库\
 
@@ -57,7 +57,7 @@ python 0_Data_Visualization.py
 ```
 python 1_HA.py
 ```
-### 2、
+### 2、使用ARIMA算法进行流量预测
 在项目根目录下执行下列指令\
 ```
 python 2_ARIMA.py
