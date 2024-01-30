@@ -53,7 +53,6 @@ def ProcessMissingValue(data_11, data_12, city_amount, judge_num):
     # 将11月和12月的数据拼在一起，形成24000*24的数据
     data = np.concatenate(data_1 + data_2)
     data = data.reshape(24000, 24)
-    print(data.shape)
     # 统计缺失的值
     missing_num = 0
     # all_data.shape[0] = 24000
@@ -148,12 +147,23 @@ def DataNormalization(all_data1, file_path, city_amount):
     for i in range(day_num):
         max_min_all += max_min
     max_min_all = np.array(max_min_all)
-    print(max_min_all.shape)
     
     all_data = (all_data-max_min_all[:,1].reshape([all_data.shape[0], 1]))/(max_min_all[:,0]-max_min_all[:,1]).reshape([all_data.shape[0],1])
     all_data = all_data.reshape([all_data.shape[0]//400, 400, 24])
-    print(all_data.shape)
     return all_data
+
+
+def LSTM_DataNormalization(all_data1):
+
+    all_data = copy.deepcopy(all_data1)
+    max_value = max(all_data)
+    min_value = min(all_data)
+
+    # 对数据进行归一化处理
+    all_data = (all_data-min_value) / (max_value - min_value)
+
+    return all_data, max_value, min_value
+
 
 def SavePreProcessData(data, file_path):
     if os.path.exists(file_path):

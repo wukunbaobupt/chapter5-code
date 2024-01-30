@@ -8,9 +8,11 @@ import DataPreProcess
 
 # 工具列表
 ########################################################
-# 1. MakeDataset
-# 2. Generator
-# 3. WriteData
+# 1. MakeDataset 制作能输入CNN模型的数据集
+# 2. MakeConvLSTMDataset 制作能输入ConvLSTM模型的数据集
+# 3. Generator CNN模型生成器
+# 4. GeneratorConvLSTM ConvLSTM模型生成器
+# 3. WriteData 保存数据
 ########################################################
 
 def MakeDataset(data_path):
@@ -19,7 +21,7 @@ def MakeDataset(data_path):
     day_nums = len(total_data)//400  # 数据的形式转换为（60，400，24）表示60天，400个grid，24小时
     total_data = np.reshape(np.array(total_data), [day_nums, 400, 24])
     print(total_data.shape)
-    train, test, valid = [], [], []
+    train, test = [], []
     # 说明一下为什么从第七天开始，因为要计算前三天的数据，以及上一周同一时间的数据，所以要从7开始，不然会造成越界
     for day in range(7, 44):
         for hour in range(total_data.shape[2]):
@@ -63,18 +65,15 @@ def MakeDataset(data_path):
             # print(data.shape)
             
             # 为什么是36，因为要包括30天的数据，从第七天开始，所以是36
-            if day <= 29:
+            if day <= 36:
                 train.append(data)
-            if 29 < day <=36:
-                valid.append(data)
             if day > 36:
                 test.append(data)
     
-    train = np.array(train) # [552, 20, 20, 8] 23*24 = 552
-    valid = np.array(valid)  # [168, 20, 20, 8] 7*24 = 168
+    train = np.array(train) # [720, 20, 20, 8] 30*24 = 720
     test = np.array(test)   # [168, 20, 20, 8] 7*24 = 168
     
-    return train, valid, test
+    return train, test
 
 def MakeConvLSTMDataset(data_path):
     # 开始制作数据
@@ -111,7 +110,7 @@ def MakeConvLSTMDataset(data_path):
                 train.append(data)
             if day > 36:
                 test.append(data)
-    train = np.array(train)  # [552, 20, 20, 8] 23*24 = 552
+    train = np.array(train)  # [720, 20, 20, 8] 30*24 = 720
     test = np.array(test)  # [168, 20, 20, 8] 7*24 = 168
 
     return train, test

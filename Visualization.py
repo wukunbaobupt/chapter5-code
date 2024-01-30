@@ -9,16 +9,14 @@ import DataPreProcess
 
 # 工具列表
 ########################################################
-# 1. DecodeData
-# 2. ShowPrediction
-# 3. HotMap
-# 4. CalculateMAE
-# 5. CalculateMSE
-# 6. CalculateRMSE
-# 7. CalculateR2score
-# 8. show_line_chart
-# 9. show_animation_serial_data
-# 10.show_hotmap_animation_along_time
+# 1. DecodeData 解归一化
+# 2. ShowPrediction 预测结果可视化
+# 3. HotMap 绘制热力图（预测结果空间可视化）
+# 4. CalculateMAE 计算MAE指标
+# 5. CalculateMSE 计算MSE指标
+# 6. CalculateRMSE 计算RMSE指标
+# 7. CalculateR2score 计算R2分数指标
+# 8. show_line_chart 预测结果可视化（示例）
 ########################################################
 
 def DecodeData(data_path, max_min_path):
@@ -35,6 +33,13 @@ def DecodeData(data_path, max_min_path):
     max_min = np.array(max_min).T
     data = data*(max_min[0]-max_min[1])+max_min[1]
     return data
+
+
+def LSTM_DecodeData(all_data1, max_value, min_value):
+    all_data = copy.deepcopy(all_data1)
+    # 对数据进行解归一化处理
+    all_data = all_data * (max_value - min_value) + min_value
+    return all_data
 
 def ShowPrediction(loc_id, result_dict, label):
     index = np.arange(label.shape[0])
@@ -58,7 +63,7 @@ def ShowPrediction(loc_id, result_dict, label):
     plt.ylabel('流量', fontsize=15)
     plt.legend(fontsize=15)
     plt.tight_layout()
-    plt.savefig('../result/5-5-10.svg', format='svg')
+    plt.savefig('./results/5-5-9.svg', format='svg')
     plt.show()
     
     
@@ -68,106 +73,113 @@ def HotMap(hour, results_dict, label):
     hour_label = np.array([_label[i] for i in range(hour, _label.shape[0], 24)])
     hour_label_mean = np.mean(hour_label, axis=0)
     keys = results_dict.keys()
-    k = 1
+    matrix1 = []
+    for i in range(20):
+        matrix1.append([hour_label_mean[i * 20 + j] for j in range(20)])
+    matrix1 = np.array(matrix1)
+    plt.figure(figsize=(5, 5))
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+    plt.rcParams['font.serif'] = ['KaiTi']
+    plt.rcParams['axes.unicode_minus'] = False
+    ax1 = sns.heatmap(matrix1, square=True)
+    plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
+    plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
+    ax1.set_title('城市平均真实流量')
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0.5)
+    plt.savefig('./results/5-5-11_1.svg', format='svg')
+
+    k = 2
     for key in keys:
-        title = '模型_%s的预测情况' % key
+        title = key
         hour_result = np.array([_results_dict[key][i] for i in range(hour, _results_dict[key].shape[0], 24)])
         hour_result_mean = np.mean(hour_result, axis=0)
-        matrix1 = []
         matrix2 = []
         matrix3 = []
         for i in range(20):
-            matrix1.append([hour_label_mean[i*20+j] for j in range(20)])
             matrix2.append([hour_result_mean[i*20+j] for j in range(20)])
-        matrix1 = np.array(matrix1)
+
         matrix2 = np.array(matrix2)
-        matrix3 = np.abs(matrix1-matrix2)/matrix1    
-        
-        fig = plt.figure(figsize=(15,5))
+        matrix3 = np.abs(matrix1-matrix2)/matrix1
+        plt.figure(figsize=(5, 5))
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
         plt.rcParams['font.serif'] = ['KaiTi']
         plt.rcParams['axes.unicode_minus'] = False
-        fig.suptitle(title, fontsize=12, color='black')
-        plt.subplot(131)
-        ax1 = sns.heatmap(matrix1, square=True)
+        ax1 = sns.heatmap(matrix2, square=True)
         plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
         plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
-        ax1.set_title('城市平均真实流量')
-        plt.subplot(132)
-        ax2 = sns.heatmap(matrix2, square=True)
-        plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
-        plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
-        ax2.set_title('城市平均预测流量')
-        plt.subplot(133)
-        ax3 = sns.heatmap(matrix3, square=True)
-        plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
-        plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
-        ax3.set_title('城市平均流量误差')
+        ax1.set_title(title+'预测值')
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.5)
-        plt.savefig('../result/5-4-4_%d.svg' %(k), format='svg')
+        plt.savefig('./results/5-5-11_%d.svg' %(k), format='svg')
+        k = k + 1
+
+        plt.figure(figsize=(5, 5))
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+        plt.rcParams['font.serif'] = ['KaiTi']
+        plt.rcParams['axes.unicode_minus'] = False
+        ax1 = sns.heatmap(matrix3, square=True)
+        plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
+        plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
+        ax1.set_title(title+'预测值与真实值误差')
+        plt.tight_layout()
+        plt.subplots_adjust(hspace=0.5)
+        plt.savefig('./results/5-5-11_%d.svg' %(k), format='svg')
         k = k + 1
 
     plt.show()
-    
-
 def CalculateMSE(data, label):
     res = []
-    for i in range(label.shape[0]):
+    for i in range(label.shape[1]):
         count = 0
-        for j in range(label.shape[1]):
-            count = count + pow(abs(data[i][j]-label[i][j]), 2)
-        res.append(count/400)
+        for j in range(label.shape[0]):
+            count = count + pow(abs(data[j][i]-label[j][i]), 2)
+        res.append(count/label.shape[0])
     return np.mean(res)\
 
 def CalculateMAE(data, label):
     res = []
-    for i in range(label.shape[0]):
+    for i in range(label.shape[1]):
         count = 0
-        for j in range(label.shape[1]):
-            count = count + abs(data[i][j]-label[i][j])
-        res.append(count/400)
+        for j in range(label.shape[0]):
+            count = count + abs(data[j][i]-label[j][i])
+        res.append(count/label.shape[0])
     return np.mean(res)
 
 
 def CalculateRMSE(data, label):
     res = []
-    for i in range(label.shape[0]):
+    for i in range(label.shape[1]):
         count = 0
-        for j in range(label.shape[1]):
-            count = count + pow(abs(data[i][j]-label[i][j]), 2)
-        count = np.sqrt(count/400)
+        for j in range(label.shape[0]):
+            count = count + pow(abs(data[j][i]-label[j][i]), 2)
+        count = np.sqrt(count/label.shape[0])
         res.append(count)
     return np.mean(res)
 
 def CalculateR2score(data, label):
     R2_score = []
     MSE = []
-    for i in range(label.shape[0]):
+    for i in range(label.shape[1]):
         count = 0
-        for j in range(label.shape[1]):
-            count = count + pow(abs(data[i][j]-label[i][j]), 2)
-        MSE.append(count/400)
+        for j in range(label.shape[0]):
+            count = count + pow(abs(data[j][i]-label[j][i]), 2)
+        MSE.append(count/label.shape[0])
     VAR = []
-    for i in range(label.shape[0]):
-        VAR.append(np.var(data[i]))
+    for i in range(label.shape[1]):
+        VAR.append(np.var(data[:, i]))
     
     for i in range(len(MSE)):
         R2_score.append(1-(MSE[i]/VAR[i]))
     return np.mean(R2_score)
 
 def show_line_chart(result, label):
-#     plt.rcParams['font.sans-serif']=['SimHei'] #显示中文标签
-#     plt.rcParams['font.serif'] = ['KaiTi']
-#     plt.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['font.sans-serif']=['SimHei'] #显示中文标签
+    plt.rcParams['font.serif'] = ['KaiTi']
+    plt.rcParams['axes.unicode_minus'] = False
     if label.shape[0] == result.shape[0]:
         index = np.arange(label.shape[0])
-        # figsize 设置图形的长和宽，第一个为长，第二个为宽
         plt.figure(figsize=(30,10))
-        # g表示green，r表示red
-#         plt.plot(index, label, c='g', label='实际值')
-#         plt.plot(index, result, c='r', label='预测值')
-#         plt.plot(index, result-label, c='b', label='误差值')
         plt.plot(index, label, c='g', label='Real Value')
         plt.plot(index, result, c='r', label='Predicted Value')
         plt.plot(index, result-label, c='b', label='Deviation')
@@ -175,15 +187,13 @@ def show_line_chart(result, label):
         plt.title("Feature importances", fontsize=30) 
         plt.xticks(fontsize=30)
         plt.yticks(fontsize=30)
-#        date = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','Monday']
+#       date = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日']
         dt = list(range(len(label)))
         dt[1] =  'Monday'
         print(dt)
         plt.xticks(range(1,len(dt),24),rotation = 45)
-        # legend设置图例
         plt.legend(loc = 'best', fontsize = 20)
         plt.title("预测值，实际值与误差分布图",fontsize=40)
-#        plt.title("The Distribution Map of Real Value, Predicted Value and Deviation",fontsize=40)
         plt.show()
 
     else:

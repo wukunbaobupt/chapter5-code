@@ -1,17 +1,19 @@
 # 导入库函数
 import keras
 import numpy
-from keras import layers
+from tensorflow.keras import layers
+from tensorflow.keras.layers import Dropout
 
 # 工具列表
 ########################################################
 # 1. MiniDeepST
 # 2. ResUnit
 # 3. MiniSTResNet
-# 4. ConvLSTMCell
-# 5. ConvLSTM
-# 6. History_Average
-# 7. ConvLSTM+Dropout
+# 4. MiniSTResNet+Dropout
+# 5. ConvLSTMCell
+# 6. ConvLSTM
+# 7. History_Average
+# 8. ConvLSTM+Dropout
 ########################################################
 
 def MiniDeepST(closeness, period, trend, filters, kernel_size, activation, use_bias):    
@@ -26,10 +28,7 @@ def MiniDeepST(closeness, period, trend, filters, kernel_size, activation, use_b
     closeness = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(closeness)
     period    = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(period)
     trend     = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(trend)
-     
     fusion    = layers.Add()([closeness, period, trend])
-    fusion    = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(fusion)
-    fusion    = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(fusion)
     fusion    = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(fusion)
     fusion    = layers.Conv2D(1, kernel_size, padding='same', activation=activation, use_bias=use_bias)(fusion)
     res       = layers.Flatten(name='output')(fusion)
@@ -50,17 +49,45 @@ def MiniSTResNet(closeness, period, trend, filters, kernel_size, activation, use
     closeness = ResUnit(closeness, filters, kernel_size)
     period    = ResUnit(period, filters, kernel_size)
     trend     = ResUnit(trend, filters, kernel_size)
-    
+
     closeness = ResUnit(closeness, filters, kernel_size)
     period    = ResUnit(period, filters, kernel_size)
     trend     = ResUnit(trend, filters, kernel_size)
-    
+
     closeness = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(closeness)
     period    = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(period)
     trend     = layers.Conv2D(filters, (1,1), padding='same', activation=activation, use_bias=use_bias)(trend)
     
     fusion = layers.Add()([closeness,period,trend])
     fusion = layers.Conv2D(1, (1,1), padding='same', activation=activation, use_bias=use_bias)(fusion)
+    fusion = layers.Flatten(name='output')(fusion)
+    return fusion
+
+
+def MiniSTResNet_dropout(closeness, period, trend, filters, kernel_size, activation, use_bias, dropout=0.5):
+    closeness = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(closeness)
+    period = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(period)
+    trend = layers.Conv2D(filters, kernel_size, padding='same', activation=activation, use_bias=use_bias)(trend)
+
+    closeness = ResUnit(closeness, filters, kernel_size)
+    period = ResUnit(period, filters, kernel_size)
+    trend = ResUnit(trend, filters, kernel_size)
+
+    closeness = ResUnit(closeness, filters, kernel_size)
+    period = ResUnit(period, filters, kernel_size)
+    trend = ResUnit(trend, filters, kernel_size)
+
+    closeness = layers.Conv2D(filters, (1, 1), padding='same', activation=activation, use_bias=use_bias)(closeness)
+    period = layers.Conv2D(filters, (1, 1), padding='same', activation=activation, use_bias=use_bias)(period)
+    trend = layers.Conv2D(filters, (1, 1), padding='same', activation=activation, use_bias=use_bias)(trend)
+
+    # 添加 Dropout  避免过拟合
+    closeness = Dropout(dropout)(closeness)
+    period = Dropout(dropout)(period)
+    trend = Dropout(dropout)(trend)
+
+    fusion = layers.Add()([closeness, period, trend])
+    fusion = layers.Conv2D(1, (1, 1), padding='same', activation=activation, use_bias=use_bias)(fusion)
     fusion = layers.Flatten(name='output')(fusion)
     return fusion
 
@@ -102,8 +129,8 @@ def evaluate_naive_method(total_data):
     def HA(date,hour):
         counter = 0
         historical_average = 0
-        while date>=7:
-            date -= 7
+        while date>=1 and counter < 30:
+            date -= 1
             historical_average += total_data[date,:,hour]
             counter += 1
         historical_average /= counter
@@ -111,10 +138,10 @@ def evaluate_naive_method(total_data):
     batch_maes = []
     naive_method_predict = [[0] * col*row ] * 7 * 24
     naive_method_label = [[0] * col*row ] * 7 *24
-    day_pos = 40 #预测的第一天在数据集中的相对位置
-    for day in range(7):  #验证集部分 12月18日-12月25日共7天
-        day_pos = 40 #预测的第一天在数据集中的相对位置
-        #11月8日是一年中的第312天，12月18日是一年中的第352天,间隔40天        
+    day_pos = 37 #预测的第一天在数据集中的相对位置
+    for day in range(7):  #验证集部分 12月8日-12月24日共7天
+        day_pos = 37 #预测的第一天在数据集中的相对位置
+        #11月1日是一年中的第312天，12月8日是一年中的第352天,间隔37天
         for hour in range(24):
             preds = HA(day+day_pos,hour)
             labels = total_data[day+day_pos,:,hour]
@@ -122,12 +149,11 @@ def evaluate_naive_method(total_data):
             naive_method_label[day * 24 + hour] = labels           
             mae = numpy.mean(numpy.abs(preds-labels))
             batch_maes.append(mae)
-    print(numpy.mean(batch_maes))
     return numpy.array(naive_method_predict),numpy.array(naive_method_label)
 
-def ConvLSTM2_Dropout(data,dropout = 0.5):
+def ConvLSTM2_Dropout(data,dropout = 0.1):
     res = ConvLSTMCell(data)
-#     res = Dropout(dropout)(res)
+    res = Dropout(dropout)(res)
     res = layers.Conv2D(64, (1,1), padding='same', activation='relu', use_bias=True)(res)
     res = layers.Conv2D(1, (1,1), padding='same', activation='relu', use_bias=True)(res)
     res = layers.Flatten(name='output')(res)

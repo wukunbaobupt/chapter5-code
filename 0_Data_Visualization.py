@@ -13,8 +13,7 @@ import math
 
 # 定义数据的位置
 # 2013-11、2013-12是米兰市100*100的网络数据
-#  2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
-
+# 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
 total = './data/total.vocab'
 data_11 = './data/2013-11-fusion.vocab'
 data_12 = './data/2013-12-fusion.vocab'
@@ -42,39 +41,7 @@ all_data1=all_data.reshape(60, 400, 24)
 all_data2=all_data.reshape(400, 60*24)
 
 
-
-#查看城市中某天的空间流量分布情况
-
-hour_1=15
-hour_2=21
-day=16 #两个月中的第几天
-
-fig = plt.figure(figsize=(15,5))
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
-plt.rcParams['font.serif'] = ['KaiTi']
-plt.rcParams['axes.unicode_minus'] = False
-
-vmax= np.max(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
-vmin= np.min(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
-
-plt.subplot(121)
-ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_1], square=True, vmin=vmin, vmax=vmax)
-ax1.set_title("11月16日下午3点的真实流量" , fontsize=15)
-plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
-plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
-plt.xlim()
-
-plt.subplot(122)
-ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_2], square=True, vmin=vmin, vmax=vmax)
-ax1.set_title("11月16日晚上9点的真实流量" , fontsize=15)
-plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
-plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
-
-plt.tight_layout()
-plt.savefig('../result/5-2-5.svg', format='svg')
-plt.show()
-
-# 查看某地区某天24小时的练习时序流量变化
+# 查看某地区某天24小时的连续时序流量变化
 
 loc_id_1 = 100#地区id（0-399）
 loc_id_2 = 200#地区id（0-399）
@@ -92,7 +59,7 @@ plt.rcParams['axes.unicode_minus'] = False
 plt.subplot(1,2,1)
 plt.bar(index, np.array(all_data1[day,loc_id_1,:]))
 plt.legend(loc = 'best')
-plt.title("11月12日的流量变化 ID=%d" %(loc_id_1), fontsize=15)
+plt.title("11月12日的流量变化 ID=%d" %(loc_id_1), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.xticks(np.arange(24), labels=label, rotation=-90, fontsize=12)
@@ -100,41 +67,14 @@ plt.ylim(0,math.ceil(max(np.concatenate((np.array(all_data1[day,loc_id_1,:]), np
 plt.subplot(1,2,2)
 plt.bar(index, np.array(all_data1[day,loc_id_2,:]))
 plt.legend(loc = 'best')
-plt.title("11月12日的流量变化 ID=%d" %(loc_id_2), fontsize=15)
+plt.title("11月12日的流量变化 ID=%d" %(loc_id_2), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.xticks(np.arange(24), labels=label, rotation=-90, fontsize=12)
 plt.ylim(0,math.ceil(max(np.concatenate((np.array(all_data1[day,loc_id_1,:]), np.array(all_data1[day,loc_id_2,:])))) / 50) * 50)
 plt.tight_layout()
-plt.savefig('../result/5-2-6.svg', format='svg')
+plt.savefig('./results/5-2-3.svg', format='svg')
 plt.show()
-
-#可视化流量变化的时空相似度
-
-# 计算第一个时间序列的自相关函数
-autocorr_data1 = np.correlate(np.array(all_data1[day,loc_id_1,:]), np.array(all_data1[day,loc_id_1,:]), mode='full')
-max_autocorr_data1 = np.max(autocorr_data1)
-
-
-# 计算两个时间序列的互相关作为相似度度量
-correlation = np.correlate(np.array(all_data1[day,loc_id_1,:]), np.array(all_data1[day,loc_id_2,:]), mode='full')
-
-correlation = correlation / max_autocorr_data1
-
-lags = np.arange(-len(np.array(all_data1[day,loc_id_1,:])) + 1, len(np.array(all_data1[day,loc_id_1,:])))
-# 绘制互相关结果图
-plt.figure(figsize=(15, 7))
-plt.plot(lags[23:],correlation[23:], linestyle='-', marker='o')
-plt.title('流量变化的时空相似度 ID=100,200 ',fontsize=20)
-plt.xlabel('时间间隔/h',fontsize=15)
-plt.ylabel('归一化互相关值',fontsize=15)
-plt.legend()
-plt.grid(True)
-plt.xticks(fontsize=12)
-plt.yticks(fontsize=12)
-plt.savefig('../result/流量相似度.svg', format='svg')
-plt.show()
-
 
 # 查看某地区7天连续的时序流量变化
 
@@ -149,7 +89,7 @@ plt.rcParams['axes.unicode_minus'] = False
 plt.subplot(1,2,1)
 plt.plot(index, np.array(all_data2[loc_id_1, 0:N_day]))
 plt.legend(loc = 'best')
-plt.title("7天内的流量变化 ID=%d" %(loc_id_1), fontsize=15)
+plt.title("7天内的流量变化 ID=%d" %(loc_id_1), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.ylim(0,math.ceil(max(np.concatenate((np.array(all_data2[loc_id_1, 0:N_day]), np.array(all_data2[loc_id_2, 0:N_day])))) / 50) * 50)
@@ -159,7 +99,7 @@ plt.xticks(range(1, len(dt), 24), date, rotation=0, fontsize=15)
 plt.subplot(1,2,2)
 plt.plot(index, np.array(all_data2[loc_id_2, 0:N_day]))
 plt.legend(loc = 'best')
-plt.title("7天内的流量变化 ID=%d" %(loc_id_2), fontsize=15)
+plt.title("7天内的流量变化 ID=%d" %(loc_id_2), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.ylim(0,math.ceil(max(np.concatenate((np.array(all_data2[loc_id_1, 0:N_day]), np.array(all_data2[loc_id_2, 0:N_day])))) / 50) * 50)
@@ -167,12 +107,12 @@ date = ['星期六', '星期日', '星期一', '星期二', '星期三', '星期
 dt = list(range(len(index)))
 plt.xticks(range(1, len(dt), 24), date, rotation=0, fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/5-2-7.svg', format='svg')
+plt.savefig('./results/5-2-4.svg', format='svg')
 plt.show()
 
 # 查看某地区30天连续的时序流量变化
 
-loc_id = 200#地区id（0-399）
+loc_id = 100#地区id（0-399）
 N_day = int(all_data2.shape[1])
 index=np.arange(N_day)
 plt.figure(figsize=(15,7))
@@ -181,12 +121,44 @@ plt.rcParams['font.serif'] = ['KaiTi']
 plt.rcParams['axes.unicode_minus'] = False
 plt.plot(index, np.array(all_data2[loc_id, 0:N_day]),)
 plt.legend(loc = 'best')
-plt.title("60天内的流量变化 ID=%d" %(loc_id), fontsize=15)
+plt.title("60天内的流量变化 ID=%d" %(loc_id), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 date = ['11月1日', '11月8日', '11月15日', '11月22日', '11月29日', '12月6日', '12月13日', '12月20日','12月27日']
 dt = list(range(len(all_data2[loc_id, 0:N_day])))
 plt.xticks(range(1, len(dt), 168), date, rotation=0, fontsize=15)
 plt.tight_layout()
-plt.savefig('../result/5-2-8.svg', format='svg')
+plt.savefig('./results/5-2-5.svg', format='svg')
+plt.show()
+
+
+#查看城市中某天的空间流量分布情况
+
+hour_1=15
+hour_2=21
+day=16 #两个月中的第几天
+
+fig = plt.figure(figsize=(15,5))
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+plt.rcParams['font.serif'] = ['KaiTi']
+plt.rcParams['axes.unicode_minus'] = False
+
+vmax= np.max(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
+vmin= np.min(np.concatenate((all_data1.reshape(60,20,20,24)[day,:,:,hour_1].flatten(), all_data1.reshape(60,20,20,24)[day,:,:,hour_2].flatten())))
+
+plt.subplot(121)
+ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_1], square=True, vmin=vmin, vmax=vmax)
+ax1.set_title("11月16日下午3点的真实流量" , fontsize=20)
+plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
+plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
+plt.xlim()
+
+plt.subplot(122)
+ax1 =sns.heatmap(all_data1.reshape(60,20,20,24)[day,:,:,hour_2], square=True, vmin=vmin, vmax=vmax)
+ax1.set_title("11月16日晚上9点的真实流量" , fontsize=20)
+plt.xticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 x 轴刻度
+plt.yticks(np.arange(0.5, 20.5, 1), labels=np.arange(1, 21, 1))  # 设置 y 轴刻度
+
+plt.tight_layout()
+plt.savefig('./results/5-2-6.svg', format='svg')
 plt.show()
