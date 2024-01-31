@@ -6,9 +6,9 @@ import DataPreProcess
 import statsmodels.api as sm
 import warnings
 import Visualization
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 warnings.filterwarnings("ignore")
 
+# 数据导入
 # 定义数据的位置
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
@@ -17,9 +17,6 @@ total_data_path = './Data/total.vocab'
 data_11 = './Data/2013-11-fusion.vocab'
 data_12 = './Data/2013-12-fusion.vocab'
 max_min_path = './Data/loc_max_mix.vocab'
-
-with open(data_11,"r") as f:  #设置文件对象
-    print(f.readline().strip())
 
 # 处理缺失值
 data_without_missing_value = DataPreProcess.ProcessMissingValue(data_11, data_12, city_amount=400, judge_num=7)
@@ -121,7 +118,7 @@ def arima_predict(train_data, test_data, order):
     return predictions_f
 
 
-#这里选用(1,1,1)的（p，d，q）顺序进行实验，实际实验时可选取不同的order对结果进行观测并分析原因。
+#这里选用(3,0,2)的（p，d，q）顺序进行实验，实际实验时可选取不同的order对结果进行观测并分析原因。
 predict_value = arima_predict(train.values.tolist(),test.values.tolist(),(3,0,2))
 predict_value = pd.Series(predict_value,index=test.index)
 
@@ -155,5 +152,5 @@ RMSE =Visualization.CalculateRMSE(predict_value.to_numpy().reshape((-1, 1)), tes
 MAE = Visualization.CalculateMAE(predict_value.to_numpy().reshape((-1, 1)), test.to_numpy().reshape((-1, 1)))
 R2 = Visualization.CalculateR2score(predict_value.to_numpy().reshape((-1, 1)), test.to_numpy().reshape((-1, 1)))
 
-print('HA   -> RMSE: %f.  MAE: %f.  R2_score: %f.' % (RMSE, MAE, R2))
+print('ARIMA -> RMSE: %f.  MAE: %f.  R2_score: %f.' % (RMSE, MAE, R2))
 

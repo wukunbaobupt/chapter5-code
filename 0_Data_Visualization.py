@@ -1,5 +1,5 @@
 import numpy as np
-import codecs #读取文件内容时，会自动转换为内部的Unicode
+import codecs
 import copy
 import os
 import matplotlib.pyplot as plt
@@ -11,8 +11,9 @@ import tensorflow
 import keras
 import math
 
+# 数据导入
 # 定义数据的位置
-# 2013-11、2013-12是米兰市100*100的网络数据
+# 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
 total = './data/total.vocab'
 data_11 = './data/2013-11-fusion.vocab'
@@ -33,13 +34,13 @@ def restore_data(data_str):
             # split()主要是将一行数据按空格分开，得到24个数据(表示每个小时的数据)
             datas.append([float(value) for value in data_str[i].split()])
         return datas
+
 #加载数据到all_data
 data_str1 = read_data(data_11)
 data_str2 = read_data(data_12)
 all_data = np.concatenate(restore_data(data_str1) + restore_data(data_str2)) #all_data shape:(24000,24) 400*60*24
 all_data1=all_data.reshape(60, 400, 24)
 all_data2=all_data.reshape(400, 60*24)
-
 
 # 查看某地区某天24小时的连续时序流量变化
 
@@ -48,7 +49,6 @@ loc_id_2 = 200#地区id（0-399）
 
 day=12 #两个月中的第几天
 index=np.arange(all_data1.shape[2])
-# print(index,all_data1[day,loc_id,:].shape)
 label = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00',
          '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
          '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00']

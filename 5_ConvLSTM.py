@@ -19,8 +19,7 @@ from tensorflow.keras.callbacks import Callback
 warnings.filterwarnings("ignore")
 print(tensorflow.__version__)
 
-# 1.1 数据导入（加载
-
+# 数据导入
 # 定义数据的位置
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
@@ -30,20 +29,17 @@ data_11 =  './Data/2013-11-fusion.vocab'
 data_12 = './Data/2013-12-fusion.vocab'
 max_min_path = './Data/loc_max_mix.vocab'
 
-with open(data_11,"r") as f:  #设置文件对象
-    print(f.readline().strip())
+# 处理缺失值
+data_without_missing_value = DataPreProcess.ProcessMissingValue(data_11, data_12, city_amount=400, judge_num=7)
 
-# # 处理缺失值
-# data_without_missing_value = DataPreProcess.ProcessMissingValue(data_11, data_12, city_amount=400, judge_num=7)
-#
-# # 处理异常值
-# data_without_abnormal_value = DataPreProcess.ProcessAbnormalValue(data_without_missing_value, city_amount=400, judge_week_num=8, judge_day_num=30)
-#
-# # 归一化数据
-# total_data = DataPreProcess.DataNormalization(data_without_abnormal_value, max_min_path, city_amount=400)
-#
-# # 数据保存
-# DataPreProcess.SavePreProcessData(total_data, total_data_path)
+# 处理异常值
+data_without_abnormal_value = DataPreProcess.ProcessAbnormalValue(data_without_missing_value, city_amount=400, judge_week_num=8, judge_day_num=30)
+
+# 归一化数据
+total_data = DataPreProcess.DataNormalization(data_without_abnormal_value, max_min_path, city_amount=400)
+
+# 数据保存
+DataPreProcess.SavePreProcessData(total_data, total_data_path)
 
 # 超参数
 OPTIMIZER = optimizers.Adam(lr=0.0003)

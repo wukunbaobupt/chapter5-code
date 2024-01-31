@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import TrainModel
 import Visualization
 import BuildModel
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
+# 数据导入
 # 定义数据的位置
 # 2013-11、2013-12是米兰市100*100网络中心的20*20的网络数据
 # 2013-11-fusion、2013-12-fusion是将100*100网络聚合成20*20网络之后的数据
@@ -79,4 +79,4 @@ if lb_id.shape[0] == pd_id.shape[0]:
 RMSE =Visualization.CalculateRMSE(pd_id.reshape((-1, 1)), lb_id.reshape((-1, 1)))
 MAE = Visualization.CalculateMAE(pd_id.reshape((-1, 1)), lb_id.reshape((-1, 1)))
 R2 = Visualization.CalculateR2score(pd_id.reshape((-1, 1)), lb_id.reshape((-1, 1)))
-print('HA   -> RMSE: %f.  MAE: %f.  R2_score: %f.' % (RMSE, MAE, R2))
+print('HA -> RMSE: %f.  MAE: %f.  R2_score: %f.' % (RMSE, MAE, R2))
