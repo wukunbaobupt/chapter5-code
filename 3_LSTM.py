@@ -170,7 +170,7 @@ plt.plot(np.arange(len(time_test)), LSTM_forecast, color='r', label='LSTM',)
 plt.plot(np.arange(len(time_test)), LSTM_Conv1D_forecast, color='orange', label='LSTM_Conv1D',)
 dt = list(range(len(time_test)))
 date = ['12月8日', '12月9日', '12月10日', '12月11日', '12月12日', '12月13日', '12月14日']
-plt.xticks(range(1, len(dt), 24), date, rotation=0,fontsize=15)
+plt.xticks(range(1, len(dt), 24), date, rotation=0, fontsize=15)
 plt.yticks(fontsize=15)
 plt.legend(loc='best',fontsize=15)
 plt.title('预测值、实际值分布图 ID=%d'%(id), fontsize=20)
