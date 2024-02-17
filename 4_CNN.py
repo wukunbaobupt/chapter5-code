@@ -70,6 +70,25 @@ test_label = np.reshape(test_label, [test_data.shape[0], 400])
 DataPreProcess.SaveLabelData(test_label, './Data/labels.vocab')
 STEPS_PER_EPOCH = int(train_data.shape[0] // BATCH_SIZE)
 
+# def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
+#     # 函数功能：制作基于滑动窗口的数据集，将数据集按照窗口大小和步长进行切分，并
+#     #          将所有窗口数据展平成一个大的数据集，对数据集随机采样，最后将每个
+#     #          样本划分为训练数据和目标数据。
+#     #    输入：series—输入训练数据
+#     #          window_size—滑动窗口的大小，即每个样本包含多少个连续时间步的数据
+#     #          batch_size—数据批量大小，即每次训练模型时输入的样本数量
+#     #          shuffle_buffer—做随机采样使用的缓冲大小，用来打乱数据集中数据顺序
+#     #    输出：ds.batch(batch_size).prefetch(1) —大小为batch_size的数据集
+#
+#     series = tensorflow.expand_dims(series, axis=-1)  # 输入训练数据进行一维展平
+#     ds = tensorflow.data.Dataset.from_tensor_slices(series)
+#     ds = ds.window(window_size + 1, shift=1, drop_remainder=True)  # 将数据集按照窗口大小和步长进行切分
+#     ds = ds.flat_map(lambda w: w.batch(window_size + 1))
+#     ds = ds.shuffle(shuffle_buffer)  # 对数据集进行随机采样，以防止训练过程中的过拟合
+#     ds = ds.map(lambda w: (w[:-1], w[1:]))  # 将每个样本划分为训练数据和目标数据。
+#     return ds.batch(batch_size).prefetch(1)
+
+
 # 1 MiniDeepST
 # mini-DeepST模型构建
 MiniDeepST_output = BuildModel.MiniDeepST(closeness, period, trend, filters=64, kernel_size=(3,3), activation='relu', use_bias=True)

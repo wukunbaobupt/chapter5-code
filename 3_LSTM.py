@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import os
 
 import Visualization
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # 禁用GPU,实验结果可复习。
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # 禁用GPU,实验结果可复现。
 warnings.filterwarnings("ignore")
 
 # 数据导入
@@ -48,7 +48,7 @@ dt = list(range(len(series[0:720])))
 plt.xticks(range(1, len(dt), 7*24), date, rotation=0,fontsize=15)
 plt.grid(True)
 plt.tight_layout()
-plt.savefig('./results/5-4-8.svg', format='svg')
+plt.savefig('./results/5-4-9.svg', format='svg')
 plt.show()
 
 # 划分训练集和测试集
@@ -151,13 +151,13 @@ LSTM_Conv1D_forecast = LSTM_Conv1D_forecast[t_time - window_size:-1, -1, 0]
 # Loss可视化
 plt.figure()
 plt.plot(range(len(LSTM_history.history['loss'])), LSTM_history.history['loss'], 'r', label='LSTM')
-plt.plot(range(len(LSTM_Conv1D_history.history['loss'])), LSTM_Conv1D_history.history['loss'], 'orange', label='LSTM+Conv1D')
+plt.plot(range(len(LSTM_Conv1D_history.history['loss'])), LSTM_Conv1D_history.history['loss'], 'orange', label='Conv1D_LSTM')
 plt.title('训练损失')
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
 plt.legend()
 plt.tight_layout()
-plt.savefig('./results/5-4-9.svg', format='svg')
+plt.savefig('./results/5-4-10.svg', format='svg')
 plt.show()
 
 # 预测结果可视化
@@ -167,7 +167,7 @@ plt.rcParams['font.serif'] = ['KaiTi']
 plt.rcParams['axes.unicode_minus'] = False
 plt.plot(np.arange(len(time_test)), series[time_test], color='b', label='真实值',)
 plt.plot(np.arange(len(time_test)), LSTM_forecast, color='r', label='LSTM',)
-plt.plot(np.arange(len(time_test)), LSTM_Conv1D_forecast, color='orange', label='LSTM_Conv1D',)
+plt.plot(np.arange(len(time_test)), LSTM_Conv1D_forecast, color='orange', label='Conv1D_LSTM',)
 dt = list(range(len(time_test)))
 date = ['12月8日', '12月9日', '12月10日', '12月11日', '12月12日', '12月13日', '12月14日']
 plt.xticks(range(1, len(dt), 24), date, rotation=0, fontsize=15)
@@ -177,7 +177,7 @@ plt.title('预测值、实际值分布图 ID=%d'%(id), fontsize=20)
 plt.xlabel('时间', fontsize=15)
 plt.ylabel('流量', fontsize=15)
 plt.tight_layout()
-plt.savefig('./results/5-4-10.svg', format='svg')
+plt.savefig('./results/5-4-11.svg', format='svg')
 plt.show()
 
 #性能结果
